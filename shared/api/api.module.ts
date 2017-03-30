@@ -1,15 +1,16 @@
 'use strict';
 
 import { NgModule } from '@angular/core';
-import { HttpModule } from '@angular/http';
-import { APIHttpService } from './api-http.service';
+import { HttpModule, XHRBackend, Http, ConnectionBackend } from '@angular/http';
+import { CustomHttp } from './api-http.service';
 
 @NgModule({
     imports: [
       HttpModule
     ],
     providers: [
-      APIHttpService
+      { provide: CustomHttp, useClass: CustomHttp },
+      { provide: ConnectionBackend, useExisting: XHRBackend }
     ]
 })
 

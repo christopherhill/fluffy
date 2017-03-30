@@ -2,7 +2,7 @@
 
 <html lang="en">
   <head>
-    <base href="/">
+    <base href="<%= htmlWebpackPlugin.options.baseHref %>">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,8 +13,8 @@
     <title>Ives &middot;</title>
 
     <link href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic" rel="stylesheet">
-    <link href="/assets/css/toolkit-inverse.css" rel="stylesheet">
-    <link href="/assets/css/application.css" rel="stylesheet">
+    <link href="<%= htmlWebpackPlugin.options.baseHref %>assets/css/toolkit-inverse.css" rel="stylesheet">
+    <link href="<%= htmlWebpackPlugin.options.baseHref %>assets/css/application.css" rel="stylesheet">
   </head>
   <body>
 

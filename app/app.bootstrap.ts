@@ -8,3 +8,5 @@ if (window.location.hostname.indexOf('localhost') < 0) {
 }
 
 export const moduleRef = platformBrowserDynamic().bootstrapModule(RootModule);
+
+window['__theme'] = 'bs4';

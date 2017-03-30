@@ -2,11 +2,15 @@ import { Injectable } from '@angular/core';
 import { Http, ConnectionBackend, RequestOptions, Request, RequestOptionsArgs, Response } from '@angular/http';
 import { Observable } from 'rxjs';
 import Rxmq from 'rxmq';
+import { ENV } from './api.config';
+
+const _ = require('loadsh');
 
 @Injectable()
-export class APIHttpService extends Http {
+export class CustomHttp extends Http {
 
   channel: any;
+  baseUrl: string = '';
 
   constructor(
     backend: ConnectionBackend,
@@ -14,54 +18,89 @@ export class APIHttpService extends Http {
   ) {
     super(backend, defaultOptions);
     this.channel = Rxmq.channel('http');
+    this.setEnvironment(ENV);
   }
 
-  request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
-    console.log('request...');
-    this.channel.subject('request').next({ progress: true });
-    return super.request(url, options).catch(res => {
-      return this.channel.subject('request').next({ progress: false });
-    });
+  setEnvironment(environment): void {
+    this.baseUrl = this.baseUrl || environment.serverUrl;
   }
+
+  setHeaders(options: RequestOptionsArgs) {
+    const defaultHeaders: Headers = new Headers({ 'Content-Type' : 'application/json' });
+    const defaultOptions: RequestOptionsArgs = { headers: defaultHeaders };
+    if (!options) return defaultOptions;
+    _.defaultsDeep(options, defaultOptions);
+    return options;
+  }
+
 
   get(url: string, options?: RequestOptionsArgs): Observable<Response> {
-    console.log('get...');
+    options = this.setHeaders(options);
     this.channel.subject('request').next({ progress: true });
-    return super.get(url, options).catch(res => {
-      return this.channel.subject('request').next({ progress: false });
+    return super.get(this.baseUrl + url, options)
+      .map(res => res.json())
+      .do(() => { this.channel.subject('request').next({ progress: false }); })
+      .catch(res => {
+          const ERROR_MESSAGE = res.json().error || DEFAULT_ERROR_MESSAGE;
+          this.channel.subject('error').next({ message: ERROR_MESSAGE });
+          this.channel.subject('request').next({ progress: false });
+          return Observable.throw(ERROR_MESSAGE);
     });
   };
 
-  post(url: string, options?: RequestOptionsArgs): Observable<Response> {
-    console.log('post...');
+  post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
+    options = this.setHeaders(options);
     this.channel.subject('request').next({ progress: true });
-    return super.get(url, options).catch(res => {
-      return this.channel.subject('request').next({ progress: false });
+    return super.post(this.baseUrl + url, body, options)
+      .map(res => res.json())
+      .do(() => { this.channel.subject('request').next({ progress: false }); })
+      .catch(res => {
+          const ERROR_MESSAGE = res.json().error || DEFAULT_ERROR_MESSAGE;
+          this.channel.subject('error').next({ message: ERROR_MESSAGE });
+          this.channel.subject('request').next({ progress: false });
+          return Observable.throw(ERROR_MESSAGE);
     });
   };
 
-  put(url: string, options?: RequestOptionsArgs): Observable<Response> {
-    console.log('put...');
+  put(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
+    options = this.setHeaders(options);
     this.channel.subject('request').next({ progress: true });
-    return super.get(url, options).catch(res => {
-      return this.channel.subject('request').next({ progress: false });
+    return super.post(this.baseUrl + url, body, options)
+      .map(res => res.json())
+      .do(() => { this.channel.subject('request').next({ progress: false }); })
+      .catch(res => {
+          const ERROR_MESSAGE = res.json().error || DEFAULT_ERROR_MESSAGE;
+          this.channel.subject('error').next({ message: ERROR_MESSAGE });
+          this.channel.subject('request').next({ progress: false });
+          return Observable.throw(ERROR_MESSAGE);
     });
   };
 
-  patch(url: string, options?: RequestOptionsArgs): Observable<Response> {
-    console.log('patch...');
+  patch(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {  
+    options = this.setHeaders(options);
     this.channel.subject('request').next({ progress: true });
-    return super.get(url, options).catch(res => {
-      return this.channel.subject('request').next({ progress: false });
+    return super.post(this.baseUrl + url, body, options)
+      .map(res => res.json())
+      .do(() => { this.channel.subject('request').next({ progress: false }); })
+      .catch(res => {
+          const ERROR_MESSAGE = res.json().error || DEFAULT_ERROR_MESSAGE;
+          this.channel.subject('error').next({ message: ERROR_MESSAGE });
+          this.channel.subject('request').next({ progress: false });
+          return Observable.throw(ERROR_MESSAGE);
     });
   };
 
   delete(url: string, options?: RequestOptionsArgs): Observable<Response> {
-    console.log('del...');
+    options = this.setHeaders(options);
     this.channel.subject('request').next({ progress: true });
-    return super.get(url, options).catch(res => {
-      return this.channel.subject('request').next({ progress: false });
+    return super.post(this.baseUrl + url, body, options)
+      .map(res => res.json())
+      .do(() => { this.channel.subject('request').next({ progress: false }); })
+      .catch(res => {
+          const ERROR_MESSAGE = res.json().error || DEFAULT_ERROR_MESSAGE;
+          this.channel.subject('error').next({ message: ERROR_MESSAGE });
+          this.channel.subject('request').next({ progress: false });
+          return Observable.throw(ERROR_MESSAGE);
     });
   };
-
 }
